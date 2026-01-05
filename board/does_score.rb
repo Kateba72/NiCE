@@ -156,7 +156,7 @@ class Board
 
     def score_estimate
       @score_estimate ||= begin
-        board_sum = board.sum { BASE_VALUES[it] }
+        board_sum = board.sum { BASE_VALUES[_1] }
         scores = board_sum >= 2000 ? SCORES_MIDGAME : SCORES_ENDGAME
         board.each_with_index.sum do |piece, field|
           if piece == 0
