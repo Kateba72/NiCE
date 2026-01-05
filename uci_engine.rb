@@ -36,8 +36,8 @@ class UciEngine
       handle_go(tokens)
     when "stop"
       handle_stop
-    when 'debugger'
-      binding.break
+    # when 'debugger'
+    #   binding.break
     when "quit"
       exit(0)
     else
