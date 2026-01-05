@@ -1,5 +1,5 @@
 class Move
-  def initialize(from_board: nil, move_start: nil, move_target: nil, target_board: nil, white_turn: true, castles: 0, en_passant: nil, reversible_moves: 0)
+  def initialize(from_board: nil, move_start: nil, move_target: nil, target_board: nil, white_turn: true, castles: 0, en_passant: nil, reversible_moves: 0, move_number: nil)
     @from_board = from_board
     @move_start = move_start
     @move_target = move_target
@@ -8,6 +8,7 @@ class Move
     @castles = castles
     @en_passant = en_passant
     @reversible_moves = reversible_moves
+    @move_number = move_number
   end
 
   def inspect
@@ -41,6 +42,7 @@ class Move
             en_passant: @en_passant,
             reversible_moves: @reversible_moves,
           ),
+          move_number: @move_number,
         )
       end
     end

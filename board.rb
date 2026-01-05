@@ -2,7 +2,7 @@ class Board
   attr_reader :board, :white_turn, :castles, :en_passant, :reversible_moves
   attr_accessor :move_number # for showing when to clean
 
-  DEPTH = 4
+  MIN_DEPTH = 3
 
   def initialize(board:, white_turn:, castles:, en_passant:, reversible_moves:)
     @board = board
@@ -13,6 +13,7 @@ class Board
     @attributes = [board, white_turn, castles, en_passant, reversible_moves]
     @remembered_score = nil
     @best_move = nil
+    @depth = -1
   end
 
   def unload
@@ -30,7 +31,14 @@ class Board
   end
 
   def best_move
-    score(DEPTH)
+    score(MIN_DEPTH)
+    @best_move
+  end
+
+  def increase_depth
+    @depth = @depth + 1
+    puts "info depth #{@depth}"
+    score(@depth)
     @best_move
   end
 
@@ -260,7 +268,8 @@ class Board
         white_turn: !white_turn,
         castles: next_castles(start),
         en_passant: allow_en_passant,
-        reversible_moves: reversible ? reversible_moves + 1 : 0
+        reversible_moves: reversible ? reversible_moves + 1 : 0,
+        move: move_number + 1
       )
     else
       Move.new(
@@ -271,6 +280,7 @@ class Board
         castles: next_castles(start),
         en_passant: allow_en_passant,
         reversible_moves: reversible ? reversible_moves + 1 : 0,
+        move_number: move_number + 1
       )
     end
   end

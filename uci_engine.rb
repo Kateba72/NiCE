@@ -118,7 +118,51 @@ class UciEngine
   def handle_go(tokens)
     @stop_requested = false
 
-    best_move = calculate_best_move
+    params = {
+      wtime: nil,
+      btime: nil,
+      winc: 0,
+      binc: 0,
+      movestogo: nil,
+    }
+
+    i = 1
+    while i < tokens.length
+      case tokens[i]
+      when "wtime"
+        params[:wtime] = tokens[i + 1].to_i
+        i += 2
+      when "btime"
+        params[:btime] = tokens[i + 1].to_i
+        i += 2
+      when "winc"
+        params[:winc] = tokens[i + 1].to_i
+        i += 2
+      when "binc"
+        params[:binc] = tokens[i + 1].to_i
+        i += 2
+      when "movestogo"
+        params[:movestogo] = tokens[i + 1].to_i
+        i += 2
+      when "depth"
+        i += 2
+      when "nodes"
+        i += 2
+      when "mate"
+        i += 2
+      when "movetime"
+        i += 2
+      when "ponder"
+        i += 1
+      when "infinite"
+        i += 1
+      else
+        # Unknown or malformed token — skip
+        i += 1
+      end
+    end
+
+    best_move = calculate_best_move(params)
 
     puts "bestmove #{Board.from_position(best_move[0])}#{Board.from_position(best_move[1])}#{best_move[2]}"
   end
@@ -133,7 +177,20 @@ class UciEngine
     Engine.instance.reset
   end
 
-  def calculate_best_move
-    @board_position.best_move
+  def calculate_best_move(params)
+    params[:movestogo] ||= 40
+    expected_time = if @board_position.white_turn
+      params[:wtime] / params[:movestogo] + params[:winc]
+    else
+      params[:btime] / params[:movestogo] + params[:binc]
+    end
+    puts "info expected time #{expected_time}"
+
+    start = Time.now
+    best_move = @board_position.best_move
+
+    while Time.now - start < expected_time * 0.6
+      best_move = @board_position.increase_depth
+    end
   end
 end

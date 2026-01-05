@@ -27,6 +27,17 @@ class Board
        0,  0,  0,  0,  0,  0,  0,  0
     ].freeze
 
+    PAWN_ENDGAME_SCORES = [
+       0,  0,  0,  0,  0,  0,  0,  0,
+       0,  0,  0,  0,  0,  0,  0,  0,
+       5,  5, 10, 10, 10, 10,  5,  5,
+      10, 15, 15, 15, 15, 15, 15, 10,
+      15, 20, 20, 20, 20, 20, 20, 15,
+      30, 35, 35, 35, 35, 35, 35, 30,
+      45, 50, 50, 50, 50, 50, 50, 45,
+       0,  0,  0,  0,  0,  0,  0,  0
+    ]
+
     KNIGHT_SCORES = [
       -25,-20,-15,-15,-15,-15,-20,-25,
       -20,-10,  0,  5,  5,  0,-10,-20,
@@ -103,7 +114,7 @@ class Board
     }.freeze
 
     SCORES_ENDGAME = {
-      Pieces::PAWN => PAWN_SCORES,
+      Pieces::PAWN => PAWN_ENDGAME_SCORES,
       Pieces::KNIGHT => KNIGHT_SCORES,
       Pieces::BISHOP => BISHOP_SCORES,
       Pieces::ROOK => ROOK_SCORES,
@@ -112,7 +123,9 @@ class Board
     }.freeze
 
     def score(depth, alpha: -Float::INFINITY, beta: Float::INFINITY)
-      @remembered_score = if depth <= 0
+      @remembered_score = if depth > 2 && depth <= @depth
+        @remembered_score
+      elsif depth <= 0
         score_estimate
       elsif white_turn
         value = -Float::INFINITY
@@ -147,6 +160,7 @@ class Board
       elsif depth == 2
         @remembered_score += (white_turn ? moves.size : -moves.size)
       end
+      @depth = depth
       @remembered_score
     end
 

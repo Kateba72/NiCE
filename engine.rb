@@ -17,7 +17,7 @@ class Engine
     return unless @boards.size > 1_000_000
     puts 'info cleaning'
     @boards = @boards.filter_map do |key, board|
-      if @move - 1 - Board::DEPTH <= board.move_number && move + 1 >= board.move_number
+      if @move - 1 <= board.move_number
         board.unload
         nil
       else
@@ -27,12 +27,13 @@ class Engine
     GC.start
   end
 
-  def find_board(board)
+  def find_board(board, move_number: nil)
+    move_number ||= @move
     if @boards.key?(board)
-      @boards[board].move_number = @move
+      @boards[board].move_number = move_number
       @boards[board]
     else
-      board.move_number = @move
+      board.move_number = move_number
       @boards[board] = board
     end
   end
