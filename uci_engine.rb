@@ -116,7 +116,7 @@ class UciEngine
   end
 
   def handle_go(tokens)
-    @stop_requested = false
+    Engine.instance.stop_calculating = false
 
     params = {
       wtime: nil,
@@ -168,11 +168,11 @@ class UciEngine
   end
 
   def handle_stop
-    @stop_requested = true
+    Engine.instance.stop_calculating = true
   end
 
   def reset_engine
-    @stop_requested = false
+    Engine.instance.stop_calculating = false
 
     Engine.instance.reset
   end
@@ -180,17 +180,22 @@ class UciEngine
   def calculate_best_move(params)
     params[:movestogo] ||= 40
     expected_time = if @board_position.white_turn
-      params[:wtime] / params[:movestogo] + params[:winc]
+      params[:wtime] / params[:movestogo] + (params[:winc] || 0)
     else
-      params[:btime] / params[:movestogo] + params[:binc]
-    end
+      params[:btime] / params[:movestogo] + (params[:binc] || 0)
+    end * 0.001 * 0.95
     puts "info expected time #{expected_time}"
 
     start = Time.now
+    Engine.instance.stop_time = Time.now + expected_time
     best_move = @board_position.best_move
 
-    while Time.now - start < expected_time * 0.6
+    until Engine.instance.stop_calculating?
+      expected_time *= 0.75
+      Engine.instance.stop_time = Time.now + expected_time
       best_move = @board_position.increase_depth
     end
+
+    best_move
   end
 end

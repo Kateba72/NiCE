@@ -1,7 +1,8 @@
 class Engine
   include Singleton
 
-  attr_accessor :move
+  attr_accessor :move, :stop_time
+  attr_writer :stop_calculating
 
   def initialize
     @move = 0
@@ -11,6 +12,10 @@ class Engine
   def reset
     @boards.values.each(&:unload) if @boards.present?
     @boards = {}
+  end
+
+  def stop_calculating?
+    !!@stop_calculating || Time.now > stop_time
   end
 
   def clean

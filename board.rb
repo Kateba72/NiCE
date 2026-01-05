@@ -36,9 +36,8 @@ class Board
   end
 
   def increase_depth
-    @depth = @depth + 1
-    puts "info depth #{@depth}"
-    score(@depth)
+    puts "info depth #{@depth + 1}"
+    score(@depth + 1)
     @best_move
   end
 
@@ -126,6 +125,7 @@ class Board
         board[home_rank] = 0
         board[home_rank + 4] = 0
         test_board = Board.new(board:, white_turn: !white_turn, castles: 0, en_passant: nil, reversible_moves: 0)
+        test_board.move_number = 0
         under_attack = test_board.moves.keys.map { _1[1] }.to_set
         board[home_rank] = white_turn ? Pieces::ROOK : -Pieces::ROOK
         board[home_rank + 4] = white_turn ? Pieces::KING : -Pieces::KING
@@ -140,10 +140,11 @@ class Board
         board[home_rank + 7] = 0
         board[home_rank + 4] = 0
         test_board = Board.new(board:, white_turn: !white_turn, castles: 0, en_passant: nil, reversible_moves: 0)
+        test_board.move_number = 0
         under_attack = test_board.moves.keys.map { _1[1] }.to_set
         board[home_rank + 7] = white_turn ? Pieces::ROOK : -Pieces::ROOK
         board[home_rank + 4] = white_turn ? Pieces::KING : -Pieces::KING
-        if under_attack.intersection(home_rank..(home_rank + 4)).blank?
+        if under_attack.intersection((home_rank + 4)..(home_rank + 7)).blank?
           add_move(@moves, home_rank + 4, home_rank + 6) do |next_board|
             next_board[home_rank + 5] = next_board[home_rank + 7]
             next_board[home_rank + 7] = 0
@@ -269,7 +270,7 @@ class Board
         castles: next_castles(start),
         en_passant: allow_en_passant,
         reversible_moves: reversible ? reversible_moves + 1 : 0,
-        move: move_number + 1
+        move_number: move_number + 1
       )
     else
       Move.new(

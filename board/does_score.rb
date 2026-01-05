@@ -39,7 +39,7 @@ class Board
     ]
 
     KNIGHT_SCORES = [
-      -25,-20,-15,-15,-15,-15,-20,-25,
+      -45,-30,-15,-15,-15,-15,-30,-45,
       -20,-10,  0,  5,  5,  0,-10,-20,
       -15,  5, 10, 15, 15, 10,  5,-15,
       -15,  0, 15, 20, 20, 15,  0,-15,
@@ -127,6 +127,12 @@ class Board
         @remembered_score
       elsif depth <= 0
         score_estimate
+      elsif Engine.instance.stop_calculating?
+        return @remembered_score
+      elsif moves.size == 0
+        @remembered_score = 0
+        @depth = Float::INFINITY
+        return 0
       elsif white_turn
         value = -Float::INFINITY
         moves.sort_by { |key, move| -move.target.remembered_score }.each do |key, move|
