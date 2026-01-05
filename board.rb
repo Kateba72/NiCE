@@ -118,7 +118,7 @@ class Board
         board[home_rank] = 0
         board[home_rank + 4] = 0
         test_board = Board.new(board:, white_turn: !white_turn, castles: 0, en_passant: nil, reversible_moves: 0)
-        under_attack = test_board.moves.keys.map { it[1] }.to_set
+        under_attack = test_board.moves.keys.map { _1[1] }.to_set
         board[home_rank] = white_turn ? Pieces::ROOK : -Pieces::ROOK
         board[home_rank + 4] = white_turn ? Pieces::KING : -Pieces::KING
         if under_attack.intersection(home_rank..(home_rank + 4)).blank?
@@ -132,7 +132,7 @@ class Board
         board[home_rank + 7] = 0
         board[home_rank + 4] = 0
         test_board = Board.new(board:, white_turn: !white_turn, castles: 0, en_passant: nil, reversible_moves: 0)
-        under_attack = test_board.moves.keys.map { it[1] }.to_set
+        under_attack = test_board.moves.keys.map { _1[1] }.to_set
         board[home_rank + 7] = white_turn ? Pieces::ROOK : -Pieces::ROOK
         board[home_rank + 4] = white_turn ? Pieces::KING : -Pieces::KING
         if under_attack.intersection(home_rank..(home_rank + 4)).blank?
@@ -149,7 +149,7 @@ class Board
 
   def to_s
     board_string = board.each_slice(8).map do |rank|
-      rank.map { AS_STRING[it] }.join
+      rank.map { AS_STRING[_1] }.join
     end.reverse.join("\n")
     "#{board_string}\n #{white_turn ? 'W' : 'B'} #{castles} #{en_passant || '-'}"
   end
